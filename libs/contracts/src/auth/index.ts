@@ -1,1 +1,1 @@
-export * from './dto'
+export * from '@app/contracts/auth/dto';
