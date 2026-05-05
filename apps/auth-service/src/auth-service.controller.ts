@@ -1,19 +1,19 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Post} from '@nestjs/common';
 import {AuthServiceService} from './auth-service.service';
+import {LoginRequestDto, RegisterRequestDto} from "@app/contracts";
 
-@Controller('api/v1/auth')
+@Controller('auth')
 export class AuthServiceController {
     constructor(private readonly authServiceService: AuthServiceService) {
     }
 
     @Post('register')
-    simulateUserRegistration(@Body() body: { email: string }) {
-        return this.authServiceService.simulateUserRegistration(body.email);
+    register(@Body() registerRequest: RegisterRequestDto) {
+        return this.authServiceService.register(registerRequest);
     }
 
-
-    @Get()
-    getHello(): string {
-        return this.authServiceService.getHello();
+    @Post('login')
+    login(@Body() loginRequest: LoginRequestDto) {
+        return this.authServiceService.login(loginRequest);
     }
 }
