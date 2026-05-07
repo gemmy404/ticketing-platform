@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {Module, ValidationPipe} from '@nestjs/common';
 import {AuthServiceController} from './auth-service.controller';
 import {AuthServiceService} from './auth-service.service';
 import {KafkaModule} from "@app/kafka";
@@ -27,7 +27,18 @@ import {PrismaModule} from "@app/database";
         KafkaModule.register('auth-service-group'),
     ],
     controllers: [AuthServiceController],
-    providers: [AuthServiceRepository, AuthServiceService],
+    providers: [
+        AuthServiceRepository,
+        AuthServiceService,
+        {
+            provide: 'APP_PIPE',
+            useValue: new ValidationPipe({
+                whitelist: true,
+                forbidNonWhitelisted: true,
+                transform: true,
+            }),
+        },
+    ],
 })
 export class AuthServiceModule {
 }
