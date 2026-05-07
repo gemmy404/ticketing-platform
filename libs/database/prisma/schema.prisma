@@ -16,7 +16,26 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
+  events Event[]
+
   @@map("users")
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  title       String      @db.VarChar(255)
+  description String?
+  date        DateTime
+  location    String      @db.VarChar(255)
+  capacity    Int
+  price       Int         @default(0)
+  status      EventStatus @default(DRAFT)
+  Organizer   User        @relation(fields: [organizerId], references: [id])
+  organizerId String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime?   @updatedAt
+
+  @@map("events")
 }
 
 enum UserRole {
@@ -25,4 +44,10 @@ enum UserRole {
   ADMIN
 
   @@map("user_role")
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
 }
