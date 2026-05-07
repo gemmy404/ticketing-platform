@@ -1,0 +1,76 @@
+import {ConflictException, Inject, Injectable, OnModuleInit, UnauthorizedException} from '@nestjs/common';
+import {KAFKA_SERVICE, KAFKA_TOPICS} from "@app/kafka";
+import {ClientKafka} from "@nestjs/microservices";
+import {LoginRequestDto, RegisterRequestDto} from "@app/contracts";
+import {AuthServiceRepository} from "./auth-service.repository";
+import {compare, hash} from "bcrypt";
+import {User} from "@prisma/client";
+import {JwtService} from "@nestjs/jwt";
+
+@Injectable()
+export class AuthServiceService implements OnModuleInit {
+
+    constructor(
+        @Inject(KAFKA_SERVICE) private readonly kafkaClient: ClientKafka,
+        private readonly authRepository: AuthServiceRepository,
+        private readonly jwtService: JwtService,
+    ) {
+    }
+
+    async onModuleInit() {
+        // connecting to kafka when the module is initialized
+        await this.kafkaClient.connect();
+    }
+
+    async register(registerRequest: RegisterRequestDto) {
+        const existingUser = await this.authRepository.findUserByEmail(registerRequest.email);
+        if (existingUser) {
+            throw new ConflictException('Email already taken, please try another one');
+        }
+
+        const hashedPassword: string = await hash(registerRequest.password, 10);
+
+        const createdUser = await this.authRepository.createUser({
+            ...registerRequest,
+            password: hashedPassword,
+        } as User);
+
+
+        this.kafkaClient.emit(KAFKA_TOPICS.USER_REGISTERED, {
+            userId: createdUser.id,
+            email: createdUser.email,
+            name: createdUser.name,
+            timestamp: new Date().toISOString(),
+        });
+
+        return {
+            message: 'User registered successfully',
+            userId: createdUser.id,
+        }
+    }
+
+    async login(loginRequest: LoginRequestDto) {
+        const savedUser = await this.authRepository.findUserByEmail(loginRequest.email);
+        if (!savedUser || !(await compare(loginRequest.password, savedUser.password))) {
+            throw new UnauthorizedException('Email or password is incorrect');
+        }
+
+        const token = this.jwtService.sign({id: savedUser.id, email: savedUser.email, role: savedUser.role});
+
+        this.kafkaClient.emit(KAFKA_TOPICS.USER_LOGIN, {
+            userId: savedUser.id,
+            timestamp: new Date().toISOString(),
+        });
+
+        return {
+            accessToken: token,
+            user: {
+                id: savedUser.id,
+                email: savedUser.email,
+                name: savedUser.name,
+                role: savedUser.role,
+            },
+        };
+    }
+
+}
