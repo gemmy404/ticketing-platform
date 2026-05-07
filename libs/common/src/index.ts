@@ -6,3 +6,6 @@ export * from './constants';
 
 // Interfaces
 export * from './interfaces';
+
+// Dto
+export * from './dto';
