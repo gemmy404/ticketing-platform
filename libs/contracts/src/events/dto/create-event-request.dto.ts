@@ -27,10 +27,10 @@ export class CreateEventRequestDto {
     @Min(0, {message: 'Price must be at least 0'})
     price: number = 0;
 
-    // @IsNotEmpty({message: 'Status is required'})
-    // @IsEnum(EventStatus,
-    //     {
-    //         message: `Status must be one of the following values: ${Object.values(EventStatus).join(', ')}`
-    //     })
-    // status: EventStatus;
+    @IsNotEmpty({message: 'Status is required'})
+    @IsEnum(EventStatus,
+        {
+            message: `Status must be one of the following values: ${Object.values(EventStatus).join(', ')}`
+        })
+    status: EventStatus;
 }
