@@ -3,7 +3,6 @@ export class PaginationDto {
 
     totalPages: number;
 
-
     currentPage: number;
 
     size: number;
