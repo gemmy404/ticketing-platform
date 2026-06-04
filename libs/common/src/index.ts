@@ -9,3 +9,6 @@ export * from './interfaces';
 
 // Enums
 export * from './enums';
+
+// Handlers
+export * from './handlers';
