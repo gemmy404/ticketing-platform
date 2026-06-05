@@ -12,3 +12,6 @@ export * from './enums';
 
 // Handlers
 export * from './handlers';
+
+// Decorators
+export * from './decorators';
