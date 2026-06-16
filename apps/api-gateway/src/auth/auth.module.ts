@@ -1,4 +1,4 @@
-import {Module, ValidationPipe} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {AuthController} from './auth.controller';
 import {AuthService} from './auth.service';
 import {HttpModule} from "@nestjs/axios";
@@ -8,17 +8,7 @@ import {HttpModule} from "@nestjs/axios";
         HttpModule,
     ],
     controllers: [AuthController],
-    providers: [
-        AuthService,
-        {
-            provide: 'APP_PIPE',
-            useValue: new ValidationPipe({
-                whitelist: true,
-                forbidNonWhitelisted: true,
-                transform: true,
-            }),
-        },
-    ]
+    providers: [AuthService]
 })
 export class AuthModule {
 }
