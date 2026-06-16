@@ -1,6 +1,6 @@
-import {HttpException, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {HttpService} from "@nestjs/axios";
-import {SERVICES_PORTS} from "@app/common";
+import {handleServiceError, SERVICES_PORTS} from "@app/common";
 import {LoginRequestDto, RegisterRequestDto} from "@app/contracts";
 import {lastValueFrom} from "rxjs";
 
@@ -24,7 +24,7 @@ export class AuthService {
 
             return response.data;
         } catch (err) {
-            this.handleError(err);
+            handleServiceError(err);
         }
     }
 
@@ -37,20 +37,7 @@ export class AuthService {
 
             return response.data;
         } catch (err) {
-            this.handleError(err);
-        }
-    }
-
-    private handleError(error: any) {
-        if (error.response) {
-            throw new HttpException(error.response.data, error.response.status);
-        } else {
-            const errorData = {
-                message: error.message || 'Service is not available',
-                error: error.error || "Service Unavailable",
-                statusCode: error.statusCode || 503,
-            }
-            throw new HttpException(errorData, 503);
+            handleServiceError(err);
         }
     }
 
