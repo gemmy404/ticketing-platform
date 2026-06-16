@@ -7,6 +7,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import {JWT_CONFIG} from "@app/common";
 import {AuthServiceRepository} from "./auth-service.repository";
 import {PrismaModule} from "@app/database";
+import {JwtStrategy} from "./jwt.strategy";
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import {PrismaModule} from "@app/database";
     providers: [
         AuthServiceRepository,
         AuthServiceService,
+        JwtStrategy,
         {
             provide: 'APP_PIPE',
             useValue: new ValidationPipe({
