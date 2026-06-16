@@ -7,7 +7,7 @@ import {CreateEventRequestDto, CurrentUserDto, PaginationQueryDto, UpdateEventRe
 @Injectable()
 export class EventsService {
 
-    private readonly Events_SERVICE_URL: string =
+    private readonly EVENTS_SERVICE_URL: string =
         `http://localhost:${SERVICES_PORTS.EVENTS_SERVICE}/events`;
 
     constructor(
@@ -18,7 +18,7 @@ export class EventsService {
     async createEvent(createEventRequest: CreateEventRequestDto, currentUser: CurrentUserDto) {
         try {
             const response = await firstValueFrom(this.httpService.post(
-                `${this.Events_SERVICE_URL}`,
+                `${this.EVENTS_SERVICE_URL}`,
                 createEventRequest,
                 {
                     headers: {
@@ -36,7 +36,7 @@ export class EventsService {
     async findAllEvents(paginationQuery: PaginationQueryDto) {
         try {
             const response = await firstValueFrom(this.httpService.get(
-                `${this.Events_SERVICE_URL}`,
+                `${this.EVENTS_SERVICE_URL}`,
                 {
                     params: paginationQuery,
                 }
@@ -51,7 +51,7 @@ export class EventsService {
     async findEventById(id: string) {
         try {
             const response = await firstValueFrom(this.httpService.get(
-                `${this.Events_SERVICE_URL}/${id}`
+                `${this.EVENTS_SERVICE_URL}/${id}`
             ));
 
             return response.data;
@@ -63,7 +63,7 @@ export class EventsService {
     async findMyEvents(paginationQuery: PaginationQueryDto, currentUser: CurrentUserDto) {
         try {
             const response = await firstValueFrom(this.httpService.get(
-                `${this.Events_SERVICE_URL}/me`,
+                `${this.EVENTS_SERVICE_URL}/me`,
                 {
                     params: paginationQuery,
                     headers: {
@@ -81,7 +81,7 @@ export class EventsService {
     async updateEvent(id: string, updateEventRequest: UpdateEventRequestDto, currentUser: CurrentUserDto) {
         try {
             const response = await firstValueFrom(this.httpService.patch(
-                `${this.Events_SERVICE_URL}/${id}`,
+                `${this.EVENTS_SERVICE_URL}/${id}`,
                 updateEventRequest,
                 {
                     headers: {
@@ -99,7 +99,7 @@ export class EventsService {
     async publishEvent(id: string, currentUser: CurrentUserDto) {
         try {
             const response = await firstValueFrom(this.httpService.patch(
-                `${this.Events_SERVICE_URL}/${id}/publish-event`,
+                `${this.EVENTS_SERVICE_URL}/${id}/publish-event`,
                 {},
                 {
                     headers: {
@@ -117,7 +117,7 @@ export class EventsService {
     async cancelEvent(id: string, currentUser: CurrentUserDto) {
         try {
             const response = await firstValueFrom(this.httpService.patch(
-                `${this.Events_SERVICE_URL}/${id}/cancel-event`,
+                `${this.EVENTS_SERVICE_URL}/${id}/cancel-event`,
                 {},
                 {
                     headers: {
