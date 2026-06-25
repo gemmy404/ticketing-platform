@@ -13,6 +13,7 @@
     "start:gateway": "nest start api-gateway --watch",
     "start:auth": "nest start auth-service --watch",
     "start:events": "nest start events-service --watch",
+    "start:tickets": "nest start tickets-service --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/api-gateway/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

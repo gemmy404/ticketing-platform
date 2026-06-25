@@ -4,6 +4,7 @@ import {AuthModule} from "./auth/auth.module";
 import {EventsModule} from "./events/events.module";
 import {APP_PIPE} from "@nestjs/core";
 import {AuthServiceModule} from "../../auth-service/src/auth-service.module";
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
     imports: [
@@ -13,6 +14,7 @@ import {AuthServiceModule} from "../../auth-service/src/auth-service.module";
         AuthModule,
         AuthServiceModule,
         EventsModule,
+        TicketsModule,
     ],
     providers: [
         {
