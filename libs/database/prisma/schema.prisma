@@ -50,7 +50,7 @@ model Ticket {
   quantity    Int          @default(1)
   totalPrice  Float
   status      TicketStatus @default(PENDING)
-  ticketCode  String       @db.VarChar(20)
+  ticketCode  String       @unique @db.VarChar(20)
   purchasedAt DateTime     @default(now())
   checkedInAt DateTime?
   createdAt   DateTime     @default(now())
