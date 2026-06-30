@@ -9,7 +9,13 @@ import {
 import {KAFKA_SERVICE, KAFKA_TOPICS} from "@app/kafka";
 import {ClientKafka} from "@nestjs/microservices";
 import {TicketsServiceRepository} from "./tickets-service.repository";
-import {CheckedInTicketRequestDto, PaginationQueryDto, PurchaseTicketRequestDto} from "@app/contracts";
+import {
+    CheckedInTicketRequestDto,
+    PaginationQueryDto,
+    PurchaseTicketRequestDto,
+    TicketCancelledEvent,
+    TicketPurchasedEvent
+} from "@app/contracts";
 import {EventsServiceRepository} from "../../events-service/src/events-service.repository";
 import {EventStatus, Ticket, TicketStatus} from "@prisma/client";
 import {generateCodes} from "@app/common";
@@ -62,15 +68,18 @@ export class TicketsServiceService implements OnModuleInit {
 
         const createdTicket = await this.ticketsRepository.createTicket(ticket);
 
-        this.kafkaClient.emit(KAFKA_TOPICS.TICKET_PURCHASED, {
+        const ticketPurchasedEvent: TicketPurchasedEvent = {
             ticketId: createdTicket.id,
-            eventId: createdTicket.eventId,
-            userId: createdTicket.userId,
+            ticketCode: createdTicket.ticketCode,
+            email: createdTicket.user.email,
+            name: createdTicket.user.name,
+            eventTitle: savedEvent.title,
+            eventDate: savedEvent.date,
+            eventLocation: savedEvent.location,
             quantity: createdTicket.quantity,
             totalPrice: createdTicket.totalPrice,
-            ticketCode: createdTicket.ticketCode,
-            timestamp: new Date().toISOString(),
-        });
+        };
+        this.kafkaClient.emit(KAFKA_TOPICS.TICKET_PURCHASED, ticketPurchasedEvent);
 
         return {
             message: 'Ticket purchased successfully',
@@ -137,12 +146,13 @@ export class TicketsServiceService implements OnModuleInit {
         const cancelledTicket = await this.ticketsRepository
             .updateTicket(ticketId, {status: TicketStatus.CANCELLED} as Ticket);
 
-        this.kafkaClient.emit(KAFKA_TOPICS.TICKET_CANCELLED, {
+        const ticketCancelledEvent: TicketCancelledEvent = {
             ticketId: cancelledTicket.id,
-            eventId: cancelledTicket.eventId,
-            userId: cancelledTicket.userId,
-            timestamp: new Date().toISOString(),
-        });
+            email: cancelledTicket.user.email,
+            name: cancelledTicket.user.name,
+            eventTitle: cancelledTicket.event.title,
+        };
+        this.kafkaClient.emit(KAFKA_TOPICS.TICKET_CANCELLED, ticketCancelledEvent);
 
         return {
             message: 'Ticket cancelled successfully',

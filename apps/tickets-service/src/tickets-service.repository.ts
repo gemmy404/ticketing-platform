@@ -72,6 +72,14 @@ export class TicketsServiceRepository {
     async createTicket(ticket: Ticket) {
         return this.prisma.ticket.create({
             data: ticket,
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                    }
+                }
+            }
         });
     }
 
@@ -94,6 +102,19 @@ export class TicketsServiceRepository {
         return this.prisma.ticket.update({
             where: {id},
             data: ticket,
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                    }
+                },
+                event: {
+                    select: {
+                        title: true,
+                    }
+                }
+            }
         });
     }
 

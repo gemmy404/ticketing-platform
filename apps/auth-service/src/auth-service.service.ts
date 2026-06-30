@@ -1,7 +1,7 @@
 import {ConflictException, Inject, Injectable, OnModuleInit, UnauthorizedException} from '@nestjs/common';
 import {KAFKA_SERVICE, KAFKA_TOPICS} from "@app/kafka";
 import {ClientKafka} from "@nestjs/microservices";
-import {LoginRequestDto, RegisterRequestDto} from "@app/contracts";
+import {LoginRequestDto, RegisterRequestDto, UserRegisteredEvent} from "@app/contracts";
 import {AuthServiceRepository} from "./auth-service.repository";
 import {compare, hash} from "bcrypt";
 import {User} from "@prisma/client";
@@ -36,12 +36,12 @@ export class AuthServiceService implements OnModuleInit {
         } as User);
 
 
-        this.kafkaClient.emit(KAFKA_TOPICS.USER_REGISTERED, {
+        const userRegisteredEvent: UserRegisteredEvent = {
             userId: createdUser.id,
             email: createdUser.email,
             name: createdUser.name,
-            timestamp: new Date().toISOString(),
-        });
+        };
+        this.kafkaClient.emit(KAFKA_TOPICS.USER_REGISTERED, userRegisteredEvent);
 
         return {
             message: 'User registered successfully',
