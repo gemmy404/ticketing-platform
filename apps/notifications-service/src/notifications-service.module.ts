@@ -1,10 +1,20 @@
-import { Module } from '@nestjs/common';
-import { NotificationsServiceController } from './notifications-service.controller';
-import { NotificationsServiceService } from './notifications-service.service';
+import {Module} from '@nestjs/common';
+import {AuthConsumer} from "./consumers/auth.consumer";
+import {TicketsConsumer} from "./consumers/tickets.consumer";
+import {MailModule} from "./mail/mail.module";
+import {ConfigModule} from "@nestjs/config";
 
 @Module({
-  imports: [],
-  controllers: [NotificationsServiceController],
-  providers: [NotificationsServiceService],
+    imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+        }),
+        MailModule,
+    ],
+    controllers: [
+        AuthConsumer,
+        TicketsConsumer
+    ],
 })
-export class NotificationsServiceModule {}
+export class NotificationsServiceModule {
+}
